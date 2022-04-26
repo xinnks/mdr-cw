@@ -1,0 +1,6 @@
+node_modules/
+worker/
+.cargo-ok
+package-lock.json
+pnpm-lock.yaml
+dist

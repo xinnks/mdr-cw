@@ -1,0 +1,16 @@
+{
+    "name": "mdr-cw",
+    "private": true,
+    "version": "1.0.0",
+    "description": "My daily reads cloudflare worker",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "format": "prettier --write '**/*.{js,css,json,md}'"
+    },
+    "author": "James Sinkala <xinnks@gmail.com>",
+    "license": "ISC",
+    "devDependencies": {
+        "prettier": "^1.17.0"
+    }
+}
