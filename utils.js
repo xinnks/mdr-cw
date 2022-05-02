@@ -12,6 +12,19 @@ export function rawHtmlResponse(html) {
   return new Response(html, init);
 }
 
+/** rawJsonResponse takes data and returns a json Response
+ * into the worker script
+ * @param {Object} data the incoming data to return in JSON
+ */
+export function rawJsonResponse(data) {
+  const init = {
+    headers: {
+      'content-type': 'application/json',
+    },
+  };
+  return new Response(data, init);
+}
+
 /**
  * readRequestBody reads in the incoming request body
  * Use await readRequestBody(..) in an async function to get the string
