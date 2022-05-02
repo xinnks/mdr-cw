@@ -15,3 +15,12 @@ export function formatDate(date = new Date(), format = "human") {
   }
   return parsedDate;
 }
+
+/**
+ * @description This function takes a date and a difference in number and returns a new date
+ * @param { Number } date => Original date
+ * @param { Number } date => The difference to be operated on the date, defaults to -1
+**/
+export function dateDifference(date = new Date(), difference = -1) {
+  return date.setDate(date.getUTCDate() + difference)
+}
