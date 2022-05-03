@@ -1,10 +1,10 @@
-import { Router } from 'itty-router';
-import { indexHtml } from './fns/html';
-import { Subscribe } from './fns';
-import { rawHtmlResponse, rawJsonResponse, readRequestBody } from './utils';
-import { Subscribe, CollectContentForDay} from './fns';
-import { formatDate, dateDifference } from './content/helpers/utils';
-import { indexHtml, messageHtml, successHtml } from './html';
+const { Router } = require('itty-router');
+const { rawHtmlResponse, rawJsonResponse, readRequestBody } = require('./utils');
+const { Subscribe } = require('./fns/subscribe');
+const { CollectContentForDay } = require('./fns/collectContentForDay');
+const { SendContentEmails } = require('./fns/sendContentEmails');
+const { formatDate, dateDifference } = require('./content/helpers/utils');
+const { indexHtml, messageHtml, successHtml } = require('./html');
 // Create a new router
 const router = Router();
 
@@ -53,8 +53,8 @@ router.post("/collect-content", async request => {
     return rawJsonResponse("Unauthorized request");
   }
   
-  console.log("yesterdayDate: -- ", yesterdayDate);
   const yesterdayDate = formatDate(dateDifference(new Date(), -1), "dashedDate");
+  console.log("yesterdayDate: -- ", yesterdayDate);
 
   let collectContent = await CollectContentForDay(count, lastDate || yesterdayDate);
   
@@ -76,6 +76,42 @@ router.post("/collect-content", async request => {
   
   return rawJsonResponse(message);
 })
+
+/** This route subscribes a user to the my-daily-reads service
+ * @param {Request} {params}
+ * @returns {Response}
+*/
+// router.post("/send-emails", async request => {
+//   let message = "", statusCode = 200, secret = "";
+//   let reqBody = await readRequestBody(request);
+//   ({ secret } = reqBody);
+//   console.log("secret -- ", secret);
+  
+//   if(!secret || (secret && (secret !== CRON_REQUEST_SECRET))){
+//     return rawJsonResponse("Unauthorized request");
+//   }
+  
+//   let {message: mailSendingStatus} = await SendContentEmails();
+  
+//   if(mailSendingStatus === "Successfully completed task."){
+//     console.log("HERE 1: ", mailSendingStatus);
+//     statusCode = 200;
+//   } else {
+//     console.log("HERE 2: ", mailSendingStatus);
+//     message = {message: mailSendingStatus};
+//     statusCode = 500;
+//   }
+  
+//   return rawJsonResponse(message);
+// })
+
+/**
+ * This route will match anything that hasn't hit a route defined
+above returning a 404 response
+ * @returns {Response}
+*/
+router.all("*", () => new Response("404, not found!", { status: 404 }))
+
 addEventListener('fetch', (e) => {
-  e.respondWith(router.handle(e.request));
+  e.respondWith(router.handle(e.request))
 })
