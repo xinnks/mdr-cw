@@ -1,4 +1,6 @@
-const { WelcomeEmailHtml } = require('./../../html');
+const { formatDate } = require('./utils');
+
+const { ContentEmailHtml, WelcomeEmailHtml } = require('./../../html');
 
 /**
  * @type {Message}
