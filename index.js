@@ -44,9 +44,10 @@ router.post("/subscribe", async request => {
  * @returns {Response}
 */
 router.post("/collect-content", async request => {
-  let message = "", statusCode = 200, secret = "", count = 100, lastDate = null;
+  let lastDate = null;
   let reqBody = await readRequestBody(request);
-  ({ secret, count } = reqBody);
+  let { secret, count } = reqBody;
+  count = count || 100;
   
   if(!secret || (secret && (secret !== CRON_REQUEST_SECRET))){
     return rawJsonResponse("Unauthorized request");
@@ -54,22 +55,9 @@ router.post("/collect-content", async request => {
   
   const yesterdayDate = formatDate(dateDifference(new Date(), -1), "dashedDate");
 
-  let collectContent = await CollectContentForDay(count, lastDate || yesterdayDate);
+  let {status, message} = await CollectContentForDay(count, lastDate || yesterdayDate);
   
-  if(collectContent.message === "Could not delete documents"){
-    message = {message: collectContent.message};
-    statusCode = 500;
-  }
-  if(collectContent.message === "Could not submit documents"){
-    message = {message: collectContent.message};
-    statusCode = 500;
-  }
-  if(collectContent.message === "Successfully added daily content."){
-    message = {message: collectContent.message};
-    statusCode = 200;
-  }
-  
-  return rawJsonResponse(message);
+  return rawJsonResponse({status, message});
 })
 
 /** This route triggers the sending of daily user content via emails
@@ -77,7 +65,7 @@ router.post("/collect-content", async request => {
  * @returns {Response}
 */
 router.post("/send-emails", async request => {
-  let message = "", statusCode = 200, secret = "";
+  let secret = "";
   let reqBody = await readRequestBody(request);
   ({ secret } = reqBody);
   
@@ -85,17 +73,9 @@ router.post("/send-emails", async request => {
     return rawJsonResponse("Unauthorized request");
   }
   
-  let {message: mailSendingStatus} = await SendContentEmails();
+  let {status, message} = await SendContentEmails();
   
-  if(mailSendingStatus === "Successfully completed task."){
-    message = {message: mailSendingStatus};
-    statusCode = 200;
-  } else {
-    message = {message: mailSendingStatus};
-    statusCode = 500;
-  }
-  
-  return rawJsonResponse(message);
+  return rawJsonResponse({status, message});
 })
 
 /**
