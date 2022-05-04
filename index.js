@@ -72,33 +72,31 @@ router.post("/collect-content", async request => {
   return rawJsonResponse(message);
 })
 
-/** This route subscribes a user to the my-daily-reads service
+/** This route triggers the sending of daily user content via emails
  * @param {Request} {params}
  * @returns {Response}
 */
-// router.post("/send-emails", async request => {
-//   let message = "", statusCode = 200, secret = "";
-//   let reqBody = await readRequestBody(request);
-//   ({ secret } = reqBody);
-//   console.log("secret -- ", secret);
+router.post("/send-emails", async request => {
+  let message = "", statusCode = 200, secret = "";
+  let reqBody = await readRequestBody(request);
+  ({ secret } = reqBody);
   
-//   if(!secret || (secret && (secret !== CRON_REQUEST_SECRET))){
-//     return rawJsonResponse("Unauthorized request");
-//   }
+  if(!secret || (secret && (secret !== CRON_REQUEST_SECRET))){
+    return rawJsonResponse("Unauthorized request");
+  }
   
-//   let {message: mailSendingStatus} = await SendContentEmails();
+  let {message: mailSendingStatus} = await SendContentEmails();
   
-//   if(mailSendingStatus === "Successfully completed task."){
-//     console.log("HERE 1: ", mailSendingStatus);
-//     statusCode = 200;
-//   } else {
-//     console.log("HERE 2: ", mailSendingStatus);
-//     message = {message: mailSendingStatus};
-//     statusCode = 500;
-//   }
+  if(mailSendingStatus === "Successfully completed task."){
+    message = {message: mailSendingStatus};
+    statusCode = 200;
+  } else {
+    message = {message: mailSendingStatus};
+    statusCode = 500;
+  }
   
-//   return rawJsonResponse(message);
-// })
+  return rawJsonResponse(message);
+})
 
 /**
  * This route will match anything that hasn't hit a route defined
