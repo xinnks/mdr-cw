@@ -1,6 +1,29 @@
 const Bottleneck = require('bottleneck');
 
 /**
+ * @description This function takes postdata with a number of properties rates it to the given keywords
+ * @param { Object } postData => The string to be rated
+ * @param { Array } keywords => keywords to rate the string by
+**/
+export function getPostValue(postData , keywords) {
+  let postValue = 0; // value of the post in relation to the keywords
+  
+  // get page <head> title inner text; get value of the title in relation to the keywords
+  postValue += (analyseKeywords(keywords, postData.headTitle) * 2);
+
+  // get page <head> description meta content inner text; get value of the description in relation to the keywords
+  postValue += (analyseKeywords(keywords, postData.headMetaDescription) * 2);
+
+  // get page <body> <h1> title inner text; get value of the heading in relation to the keywords
+  postValue += (analyseKeywords(keywords, postData.bodyH1Heading) * 2);
+  
+  // get keywords value for text in <body> <article> content
+  postValue += analyseKeywords(keywords, postData.bodyArticleContent);
+  
+  return parseFloat(postValue.toFixed(2));
+}
+
+/**
  * @description This function formats posts to our post data schema
  * @param { Array } posts => The array of posts to be formatted
  * @param { Number } startingPoint => Posts starting count point
