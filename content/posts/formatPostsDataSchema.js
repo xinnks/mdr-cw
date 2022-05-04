@@ -66,3 +66,54 @@ export async function getImportantPageFields (url, source = "dev.to", partialDat
 function hashnodePostUrl(data) {
   return (data.author && data.author.publicationDomain) ? `https://${data.author.publicationDomain}/${data.slug}` : `https://${data.author.blogHandle}.hashnode.dev/${data.slug}`;
 }
+
+/**
+ * @description This function formats posts to our post data schema
+ * @param { Array } posts => The array of posts to be formatted
+ * @param { Number } startingPoint => Posts starting count point
+ * @param { Number } totalPostsCount => The total posts count
+ * @param { String } source => Source of the posts content
+**/
+export async function formatPostsDataSchema(posts, startingCount, totalPostsCount, source = 'hashnode'){
+    let formattedPosts = [];
+    console.log("POSTS Count: ",totalPostsCount, " | totalPostsCount: ", totalPostsCount, " | posts.length: ", posts.length);
+    const fetchAll = posts.filter(item => item.author && (item.author.publicationDomain || item.author.blogHandle )).map(post => {
+      const postUrl = source === "hashnode" ? hashnodePostUrl(post) : post.url;
+      const partialData = source === "hashnode" ? {headMetaDescription: post.brief, headMetaOgImage: post.coverImage, headTitle: post.title} : null;
+      return getImportantPageFields(postUrl, source, partialData);
+    });
+    
+    console.time("timeUsed");
+    const allFetched = await Promise.all(fetchAll);
+    console.timeEnd("timeUsed");
+    console.log("FINISHED CHECKING URLs[totalPostsCount]: ", allFetched.length);
+    console.log("Here 5");
+    let isHashnode = source === "hashnode", count = 0;
+    allFetched.forEach(item => {
+      count++;
+      console.log("Inside allFetched.forEach");
+      // content
+      let postInfo = isHashnode ?
+        posts.filter(info => hashnodePostUrl(info) === item.url) :
+        posts.filter(info => info.url === item.url);
+      let postUrl = isHashnode ? hashnodePostUrl(postInfo[0]) : item.url;
+      delete item.url;
+      console.log(`WORKING ON POST FROM (${source})[${postUrl}]: -- `, item.headTitle, item.twitterHandle);
+      let alternativeImage = item.headMetaOgImage;
+      formattedPosts.push({
+        title: postInfo[0].title,
+        domain: isHashnode ? (postInfo[0].author.publicationDomain || `https://${postInfo[0].author.blogHandle}.hashnode.dev`) : 'https://dev.to',
+        description: isHashnode ? postInfo[0].brief : postInfo[0].description,
+        url: postUrl,
+        image: isHashnode ? (postInfo[0].coverImage || alternativeImage) : (postInfo[0].cover_image || alternativeImage),
+        author: isHashnode ? postInfo[0].author.name : postInfo[0].user.name,
+        datePublished: isHashnode ? postInfo[0].dateAdded : postInfo[0].published_at,
+        ...item,
+        source
+      });
+      if(allFetched.length === count){
+        console.log("Finished allFetched.forEach");
+      }
+    });
+    return formattedPosts;
+  }
