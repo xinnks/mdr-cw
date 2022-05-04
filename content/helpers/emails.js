@@ -15,6 +15,43 @@ const HEADERS = {
 };
 
 /**
+  
+/**
+ * @description This function mails content emails to users
+ * @param { Array } data => The array of emails to be sent
+**/
+export async function sendDailyContentEmails(data){
+  let dateToday = formatDate(new Date(), "human");
+  let formattedData = data.map( x => {
+    const textPart = x.content.map(x => `${x.title} \n ${x.url} \n ${x.description} \n by ${x.author} \n\n`);
+    return {
+      To: [
+        {
+          Email: x.user.email,
+          Name: x.user.name
+        }
+      ],
+      TextPart: `Here are some interesting reads we've compiled for you for ${x.date} \n\n ${textPart}`,
+      HTMLPart: ContentEmailHtml(x.content, x.keywords, x.user)
+    };
+  });
+  let emailHeading = `Here are some interesting reads we've compiled for you for ${dateToday}.`;
+  let stringifiedEmailBody = JSON.stringify({Globals: { FROM: FROM, Subject: emailHeading }, Messages: formattedData});
+  
+  return fetch(`https://api.mailjet.com/v3.1/send`, {
+    method: 'POST',
+    headers: HEADERS,
+    body: stringifiedEmailBody
+  })
+  .then(x => {
+    return true;
+  })
+  .catch( e => {
+    return false;
+  })
+}
+
+/**
  * @description This function sends a welcome email
  * @param { Object } user => user object
 **/
