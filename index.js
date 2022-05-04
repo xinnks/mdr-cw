@@ -47,29 +47,24 @@ router.post("/collect-content", async request => {
   let message = "", statusCode = 200, secret = "", count = 100, lastDate = null;
   let reqBody = await readRequestBody(request);
   ({ secret, count } = reqBody);
-  console.log("secret -- ", secret);
   
   if(!secret || (secret && (secret !== CRON_REQUEST_SECRET))){
     return rawJsonResponse("Unauthorized request");
   }
   
   const yesterdayDate = formatDate(dateDifference(new Date(), -1), "dashedDate");
-  console.log("yesterdayDate: -- ", yesterdayDate);
 
   let collectContent = await CollectContentForDay(count, lastDate || yesterdayDate);
   
   if(collectContent.message === "Could not delete documents"){
-    console.log("HERE 1: ", collectContent.message);
     message = {message: collectContent.message};
     statusCode = 500;
   }
   if(collectContent.message === "Could not submit documents"){
-    console.log("HERE 2: ", collectContent.message);
     message = {message: collectContent.message};
     statusCode = 500;
   }
   if(collectContent.message === "Successfully added daily content."){
-    console.log("HERE 3: ", collectContent.message);
     message = {message: collectContent.message};
     statusCode = 200;
   }
