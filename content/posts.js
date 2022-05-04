@@ -24,6 +24,47 @@ export function getPostValue(postData , keywords) {
 }
 
 /**
+
+/**
+ * @description This function rates an array of posts using the provided keywords
+ * @param { Array } posts => The array of posts to be rated
+ * @param { Array } keywords => The keywords to rate the posts by
+ * @param { Number } startingPoint => Posts starting count point
+ * @param { Number } totalPosts => The total posts count
+ * @param { String } source => Source of the posts content
+**/
+export async function analysePostsByKeywords(posts, keywords, startingPoint, totalPosts, source = 'hashnode'){
+  let postsByValue = [], formatedPost;
+
+  posts.forEach(async post => {
+    let postValue = 0; // value of the post in relation to the keywords
+    postValue = getPostValue(post, keywords);
+  
+    // aggregate posts
+    postsByValue.push({...post, postValue});
+      
+    if(startingPoint + 1 >= totalPosts){
+      postsByValue.sort((x, y) => {
+        console.log(`sorting..`);
+        return y.postValue - x.postValue
+      })
+      formatedPost = postsByValue.map((item) => ({
+        url: item.url,
+        title: item.title,
+        description: item.description,
+        datePublished: item.datePublished,
+        author: !!item.author ? (item.author.includes(" ") ? formatName(item.author) : item.author) : "Unknown Author",
+        image: item.image,
+        keywords: keywords.join(),
+        articleValue: item.postValue,
+        source: item.domain || `https://dev.to`,
+        contentStashId: item.refId // _id.toString()
+      }));
+    }
+    startingPoint++;
+  });
+  return formatedPost;
+}
  * @description This function formats posts to our post data schema
  * @param { Array } posts => The array of posts to be formatted
  * @param { Number } startingPoint => Posts starting count point
