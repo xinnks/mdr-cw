@@ -1,6 +1,6 @@
 const { formatDate } = require('./utils');
 
-const { ContentEmailHtml, WelcomeEmailHtml } = require('./../../html');
+const { otpEmailHtml, ContentEmailHtml, WelcomeEmailHtml } = require('./../../html');
 
 /**
  * @type {Message}
