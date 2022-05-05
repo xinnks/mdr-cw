@@ -1,4 +1,3 @@
-const { fetchDevToArticlesFromAPI } = require("./../content/devto_content");
 const { formatPostsDataSchema } = require("./../content/posts/formatPostsDataSchema");
 const { formatDate, dateDifference } = require("./../content/helpers/utils");
 const { deleteDocuments, insertDocuments, fetchAllCollectionData, countCollectionData } = require("./../db");
@@ -10,7 +9,7 @@ const { fetchHashnodePostsFromAPI } = require('./../content/hashnode_content');
  * @description This function fetches and compiles the latest content from sources, formats to a preffered schema and stores them into the database
 **/
 export async function CollectContentForDay(contentLimit, previousInsertDate = yesterdayDate){
-  let message, formattedDevToContent, formattedHashnodeContent;
+  let message, formattedHashnodeContent;
   let {state, body: hashnodeContent} = await fetchHashnodePostsFromAPI();
   if(state === "success"){
     formattedHashnodeContent = await formatPostsDataSchema(hashnodeContent, 0, hashnodeContent.length, 'hashnode');
