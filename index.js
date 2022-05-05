@@ -7,7 +7,7 @@ const { RedirectToArticle } = require('./fns/redirectToArticle');
 const { UnsubscriptionRequest } = require('./fns/unsubscriptionRequest');
 const { Unsubscribe } = require('./fns/unsubscribe');
 const { formatDate, dateDifference } = require('./content/helpers/utils');
-const { indexHtml, messageHtml, successHtml, NotFoundHtml, UnsubscribeRequestHtml } = require('./html');
+const { indexHtml, messageHtml, successHtml, NotFoundHtml, UnsubscribeRequestHtml, UpdateKeywordsRequestHtml } = require('./html');
 // Create a new router
 const router = Router();
 
@@ -98,6 +98,13 @@ router.post("/unsubscribe", async request => {
   return rawHtmlResponse(messageHtml("Farewell", body));
 })
 
+/**
+ * Route that receives an update page request
+ * @returns {Response}
+*/
+router.get("/update", async ({ query }) => {
+  return rawHtmlResponse(UpdateKeywordsRequestHtml);
+})
 /** This route subscribes a user to the my-daily-reads service
  * @param {Request} {params}
  * @returns {Response}
