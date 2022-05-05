@@ -46,7 +46,7 @@ router.post("/subscribe", async request => {
  * @returns {Response}
 */
 router.get("/unsubscribe", async ({ query }) => {
-  let message = "", { email } = query;
+  let message, title, { email } = query;
 
   if (!email) {
     return rawHtmlResponse(NotFoundHtml);
@@ -55,8 +55,14 @@ router.get("/unsubscribe", async ({ query }) => {
   const {status, body} = await UnsubscriptionRequest(email);
 
   if(status === "failure"){
-    message = body === "No user with this email!" ? body : "Sorry, we've encountered an error on our side. Please refresh page to retry.";
-    return rawHtmlResponse(messageHtml("Server Error", message));
+    if(body === "No user with this email!"){
+      message = body;
+      title = "Unknown Account";
+    } else {
+      message = "Server Error";
+      title = "Sorry, we've encountered an error on our side. Please refresh page to retry.";
+    }
+    return rawHtmlResponse(messageHtml(title, message));
   }
   // Redirect to url
   return rawHtmlResponse(UnsubscribeRequestHtml);
