@@ -8,7 +8,7 @@ const { sendWelcomeEmail } = require("./../content/helpers/emails");
 export async function Subscribe(userData) {
   let message;
   const { state, body } = await findDocument(userData.email, ACCOUNT_FROM_EMAIL_INDEX);
-  if(state === "success" && body.email === userData.email){
+  if(state === "success" && body.data.email === userData.email){
     message = "Email already subscribed!";
     return {status: "failure", message};
   } else {
