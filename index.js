@@ -6,8 +6,9 @@ const { SendContentEmails } = require('./fns/sendContentEmails');
 const { RedirectToArticle } = require('./fns/redirectToArticle');
 const { UnsubscriptionRequest } = require('./fns/unsubscriptionRequest');
 const { Unsubscribe } = require('./fns/unsubscribe');
+const { KeywordsUpdateRequest } = require('./fns/keywordsUpdateRequest');
 const { formatDate, dateDifference } = require('./content/helpers/utils');
-const { indexHtml, messageHtml, successHtml, NotFoundHtml, UnsubscribeRequestHtml, UpdateKeywordsRequestHtml } = require('./html');
+const { indexHtml, messageHtml, successHtml, NotFoundHtml, UnsubscribeRequestHtml, UpdateKeywordsRequestHtml, KeywordsUpdateHtml } = require('./html');
 // Create a new router
 const router = Router();
 
@@ -105,6 +106,29 @@ router.post("/unsubscribe", async request => {
 router.get("/update", async ({ query }) => {
   return rawHtmlResponse(UpdateKeywordsRequestHtml);
 })
+
+/** This route logs user info(keywords) update request
+ * @param {Request} {params}
+ * @returns {Response}
+*/
+router.post("/update", async request => {
+  let reqBody = await readRequestBody(request), message;
+  let { email } = reqBody;
+  
+  if(!email){
+    message = `email is required.`;
+    return rawHtmlResponse(messageHtml("Missing fields", message));
+  }
+
+  const {status, body} = await KeywordsUpdateRequest(email);
+
+  if(status === "failure"){
+    return rawHtmlResponse(UpdateKeywordsRequestHtml(body));
+  }
+  
+  return rawHtmlResponse(KeywordsUpdateHtml);
+})
+
 /** This route subscribes a user to the my-daily-reads service
  * @param {Request} {params}
  * @returns {Response}
