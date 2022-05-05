@@ -5,7 +5,7 @@ const { Delete, Ref, Collection, getFaunaError, faunaClient } = require('./clien
  * @param { String } refId => Document's ref id
  * @param { String } collectionIndex => Collection index
 **/
-export async function deleteDocuments(refId, collectionIndex){
+export async function deleteDocument(refId, collectionIndex){
   try {
     const result = await faunaClient.query(
       Delete(
