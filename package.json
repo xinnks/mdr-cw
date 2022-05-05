@@ -11,6 +11,20 @@
     "author": "James Sinkala <xinnks@gmail.com>",
     "license": "ISC",
     "devDependencies": {
-        "prettier": "^1.17.0"
+        "prettier": "^1.17.0",
+        "wyt": "^2.0.1"
+    },
+    "dependencies": {
+        "axios": "^0.27.0",
+        "bottleneck": "^2.19.5",
+        "cheerio": "^1.0.0-rc.10",
+        "faunadb": "^4.5.4",
+        "install": "^0.13.0",
+        "itty-router": "^2.1.9",
+        "mathjs": "^10.5.0",
+        "mongodb": "^4.5.0",
+        "node-mailjet": "^3.3.13",
+        "ohmyfetch": "^0.4.16",
+        "serverless-cloudflare-workers": "^1.2.0"
     }
 }
