@@ -1,7 +1,7 @@
 /**
  * rawHtmlResponse returns HTML inputted directly
  * into the worker script
- * @param {string} html
+ * @param {String} html
  */
 export function rawHtmlResponse(html) {
   const init = {
