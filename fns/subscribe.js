@@ -1,4 +1,5 @@
-const { insertDocument, findDocument } = require("./../db");
+const { findDocument } = require("./../db/findDocument");
+const { insertDocument } = require("./../db/insertDocument");
 const { sendWelcomeEmail } = require("./../content/helpers/emails");
 
 /**
