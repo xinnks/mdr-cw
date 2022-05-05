@@ -8,7 +8,7 @@ export const messageHtml = (title, message) => `
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>${title} | My Daily Reads</title>
-  <meta name="description" content="Get customized dev content for your reading delivered to your inbox daily.">
+  <meta name="description" content="${message}">
   
   <style>
   ${css}
@@ -30,6 +30,10 @@ export const messageHtml = (title, message) => `
 
       <p class="p-4 mb-4 mt-10 width-full text-2xl">
         ${message}
+      </p>
+
+      <p class="p-4 mb-4 mt-10 width-full text-2xl">
+        <a href="${SITE_URL}">Go back home</a>
       </p>
 
     </main>
