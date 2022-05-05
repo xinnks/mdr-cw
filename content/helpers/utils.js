@@ -24,3 +24,11 @@ export function formatDate(date = new Date(), format = "human") {
 export function dateDifference(date = new Date(), difference = -1) {
   return date.setDate(date.getUTCDate() + difference)
 }
+
+/**
+ * @description This function takes mixed cased name and formats it
+ * @param { String } name => name to be formatted
+**/
+export function formatName(name) {
+  return name.match(/(\w)+/g).map(x => x.slice(0,1).toUpperCase()+''+x.slice(1,x.length).toLowerCase()).join(" ")
+}
