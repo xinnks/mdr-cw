@@ -1,6 +1,7 @@
 const { indexHtml } = require("./indexHtml");
 const { messageHtml } = require("./messageHtml");
 const { successHtml } = require("./successHtml");
+const { contentEmailHtml } = require("./contentEmailHtml");
 const { KeywordsUpdateHtml } = require("./keywordsUpdateHtml");
 const { NotFoundHtml } = require("./notFoundHtml");
 const { otpEmailHtml } = require("./otpEmailHtml");
@@ -15,6 +16,7 @@ module.exports = {
   indexHtml,
   messageHtml,
   successHtml,
+  contentEmailHtml,
   KeywordsUpdateHtml,
   NotFoundHtml,
   otpEmailHtml,
