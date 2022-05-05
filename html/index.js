@@ -9,6 +9,7 @@ const { ContentEmailHtml } = require("./contentEmailHtml");
 const { WelcomeEmailHtml } = require("./welcomeEmailHtml");
 const { FarewellEmailHtml } = require("./farewellEmailHtml");
 const { UnsubscribeRequestHtml } = require("./unsubscribeRequestHtml");
+const { KeywordsUpdateEmailHtml } = require("./keywordsUpdateEmailHtml");
 
 module.exports = {
   indexHtml,
@@ -21,5 +22,6 @@ module.exports = {
   FarewellEmailHtml,
   ContentEmailHtml,
   WelcomeEmailHtml,
-  UnsubscribeRequestHtml
+  UnsubscribeRequestHtml,
+  KeywordsUpdateEmailHtml
 }
