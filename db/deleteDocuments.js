@@ -1,4 +1,9 @@
-const { Map, Lambda, Delete, Ref, Collection, Var, getFaunaError, faunaClient } = require('./client')
+const faunadb = require('faunadb');
+const { getFaunaError } = require('./db-utils.js');
+const faunaClient = new faunadb.Client({
+  secret: FAUNA_SECRET
+})
+const { Map, Lambda, Delete, Ref, Collection, Var } = faunadb.query;
 
 /**
  * @description This function deletes many documents
@@ -6,28 +11,21 @@ const { Map, Lambda, Delete, Ref, Collection, Var, getFaunaError, faunaClient } 
  * @param { String } collectionIndex => Collection index
 **/
 export async function deleteDocuments(refIds, collectionIndex){
-  try {
-    const result = await faunaClient.query(
-      Map(
-        refIds,
-        Lambda("refId",
-          Delete(
-            Ref(
-              Collection(collectionIndex), Var("refId")
-            )
+  const result = await faunaClient.query(
+    Map(
+      refIds,
+      Lambda("refId",
+        Delete(
+          Ref(
+            Collection(collectionIndex), Var("refId")
           )
         )
       )
-    );
-    
-    return {
-      state: "success",
-      body: result.data
-    }
-  } catch (error) {
-    return {
-      state: "error",
-      body: getFaunaError(error)
-    };
+    )
+  );
+  
+  return {
+    state: "success",
+    body: result.data
   }
 }
