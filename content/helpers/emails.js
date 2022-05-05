@@ -17,6 +17,52 @@ const HEADERS = {
 };
 
 /**
+ * @description This function sends an OTP password to the provided email account
+ * @param { String } email => Receiver's email
+ * @param { Number } otp => The one time password to be sent
+ * @param { String } name => The name of the receiver of the email
+ * @param { String } type => Type of OTP email to be sent
+**/
+export async function sendOtpEmail(email, otp, name, type = "verification"){
+  let emailMessage, customMessage = "";
+  if(type === "verification"){
+    emailMessage = `Verify your My Daily Reads account \n ${otp} \n Please use this OTP to verify your account and update your daily content keywords. \n This OTP expires after 15 minutes. \n `;
+    customMessage = "Please use this OTP to verify your account and update your daily content keywords.";
+  }
+  if(type === "unsubscribe"){
+    emailMessage = `Verify your My Daily Reads account. \n We have received a request to unsubscribe you from the My Daiy Reads service, please use this OTP to proceed. \n ${otp} \n \n This OTP expires after 15 minutes. \n `;
+    customMessage = "We have received a request to unsubscribe you from My Daiy Reads service, please use this OTP to proceed.";
+  }
+  const data = {
+    Messages:[
+      {
+        From: FROM,
+        To: [
+          {
+            Email: email,
+            Name: name
+          }
+        ],
+        Subject: "Verify your My Daily Reads account",
+        TextPart: emailMessage,
+        HTMLPart: otpEmailHtml(otp, email, customMessage)
+      }
+    ]
+  };
+
+  try {
+    await fetch(`https://api.mailjet.com/v3.1/send`, {
+      method: 'POST',
+      headers: HEADERS,
+      body: JSON.stringify(data),
+    });
+    return true;
+  }
+  catch(e) {
+    console.log(e);
+    return false;
+  }
+}
   
 /**
  * @description This function mails content emails to users
