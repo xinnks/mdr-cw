@@ -10,10 +10,11 @@ export async function Unsubscribe (otp){
   // get otp info
   const {state: otpStatus, body: otpData} = await findDocument(otp, OTP_FROM_OTP_INDEX);
 
-  if(otpStatus === "error"){
+  if(otpStatus === "error" || !otpData.data){
     message = "Unknown otp!";
     return {status: "failure", body: message};
   }
+  
   // check otp expiration status
   if((Date.parse(new Date()) - Date.parse(new Date(otpData.data.created))) > 900000){
     message = "OTP expired!";
@@ -24,8 +25,7 @@ export async function Unsubscribe (otp){
   const {status: otpDeletionStatus} = await deleteDocument(otpData.refId, OTP_COLLECTION);
   if(otpDeletionStatus === "error"){
     message = "Could not delete OTP row!";
-    // TODO: Send error log email 
-    return {status: "failure", body: message};
+    // TODO: Send error log email
   }
   
   // get user info
