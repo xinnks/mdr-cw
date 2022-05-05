@@ -4,8 +4,9 @@ const { Subscribe } = require('./fns/subscribe');
 const { CollectContentForDay } = require('./fns/collectContentForDay');
 const { SendContentEmails } = require('./fns/sendContentEmails');
 const { RedirectToArticle } = require('./fns/redirectToArticle');
+const { UnsubscriptionRequest } = require('./fns/unsubscriptionRequest');
 const { formatDate, dateDifference } = require('./content/helpers/utils');
-const { indexHtml, messageHtml, successHtml, NotFoundHtml } = require('./html');
+const { indexHtml, messageHtml, successHtml, NotFoundHtml, UnsubscribeRequestHtml } = require('./html');
 // Create a new router
 const router = Router();
 
@@ -38,6 +39,27 @@ router.post("/subscribe", async request => {
   let {status, message} = await Subscribe({name, email, keywords: screenedKeywordsData});
   console.error("{status, message}: -- ", {status, message});
   return status === "success" ? rawHtmlResponse(successHtml) : rawHtmlResponse(messageHtml("Failed to subscribe", message));
+})
+
+/**
+ * Route that receives an unsubscription request
+ * @returns {Response}
+*/
+router.get("/unsubscribe", async ({ query }) => {
+  let message = "", { email } = query;
+
+  if (!email) {
+    return rawHtmlResponse(NotFoundHtml);
+  }
+
+  const {status, body} = await UnsubscriptionRequest(email);
+
+  if(status === "failure"){
+    message = body === "No user with this email!" ? body : "Sorry, we've encountered an error on our side. Please refresh page to retry.";
+    return rawHtmlResponse(messageHtml("Server Error", message));
+  }
+  // Redirect to url
+  return rawHtmlResponse(UnsubscribeRequestHtml);
 })
 
 /** This route subscribes a user to the my-daily-reads service
