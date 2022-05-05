@@ -7,6 +7,7 @@ const { RedirectToArticle } = require('./fns/redirectToArticle');
 const { UnsubscriptionRequest } = require('./fns/unsubscriptionRequest');
 const { Unsubscribe } = require('./fns/unsubscribe');
 const { KeywordsUpdateRequest } = require('./fns/keywordsUpdateRequest');
+const { UpdateKeywords } = require('./fns/updateKeywords');
 const { formatDate, dateDifference } = require('./content/helpers/utils');
 const { indexHtml, messageHtml, successHtml, NotFoundHtml, UnsubscribeRequestHtml, UpdateKeywordsRequestHtml, KeywordsUpdateHtml } = require('./html');
 // Create a new router
@@ -127,6 +128,39 @@ router.post("/update", async request => {
   }
   
   return rawHtmlResponse(KeywordsUpdateHtml);
+})
+
+/** This route verifies user and updates their content keywords
+ * @param {Request} {request}
+ * @returns {Response}
+*/
+router.post("/update-keywords", async request => {
+  let reqBody = await readRequestBody(request), message;
+  let { otp, keywords } = reqBody;
+  
+  if(!email || !keywords){
+    message = `${!otp?'otp, ':''}${!keywords?'keywords, ':''} are required.`;
+    return rawHtmlResponse(messageHtml("Missing fields", message));
+  }
+
+  // filter keywords
+  let filteredKeywords = keywords.match(/^([.]*[\w]+[ ]*[,]*[ ]*[.]*[\w]+)/gi);
+  let escapedKeywordsData = filteredKeywords.length ? filteredKeywords.join(",") : filteredKeywords.join("");
+
+  const {status, body} = await UpdateKeywords(parseInt(otp), escapedKeywordsData);
+
+  if(status === "failure"){
+    if(body.includes("Could not")){
+      message = "Server Error";
+      title = "Sorry, we've encountered an error on our side. Please refresh page to retry.";
+    } else {
+      title = body;
+      message = body.toLowerCase.includes("otp") ? "Please make a new keywords update request." : body;
+    }
+    return rawHtmlResponse(messageHtml(title, message));
+  }
+  
+  return rawHtmlResponse(messageHtml("Successfully changed keywords!", message));
 })
 
 /** This route subscribes a user to the my-daily-reads service
