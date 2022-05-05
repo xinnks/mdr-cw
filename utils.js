@@ -1,7 +1,7 @@
 /**
  * rawHtmlResponse returns HTML inputted directly
  * into the worker script
- * @param {string} html
+ * @param {String} html
  */
 export function rawHtmlResponse(html) {
   const init = {
@@ -10,6 +10,19 @@ export function rawHtmlResponse(html) {
     },
   };
   return new Response(html, init);
+}
+
+/** rawJsonResponse takes data and returns a json Response
+ * into the worker script
+ * @param {Object} data the incoming data to return in JSON
+ */
+export function rawJsonResponse(data) {
+  const init = {
+    headers: {
+      'content-type': 'application/json',
+    },
+  };
+  return new Response(JSON.stringify(data, null, 2), init);
 }
 
 /**
