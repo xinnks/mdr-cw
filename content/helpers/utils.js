@@ -32,3 +32,8 @@ export function dateDifference(date = new Date(), difference = -1) {
 export function formatName(name) {
   return name.match(/(\w)+/g).map(x => x.slice(0,1).toUpperCase()+''+x.slice(1,x.length).toLowerCase()).join(" ")
 }
+
+/**
+ * @description This function generates a six figure random number
+**/
+export const generateOTP = () => Math.floor(100000 + Math.random() * 900000);
