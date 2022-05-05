@@ -1,6 +1,6 @@
 const { formatDate } = require('./utils');
 
-const { otpEmailHtml, ContentEmailHtml, WelcomeEmailHtml } = require('./../../html');
+const { otpEmailHtml, ContentEmailHtml, WelcomeEmailHtml, FarewellEmailHtml } = require('./../../html');
 
 /**
  * @type {Message}
@@ -120,6 +120,42 @@ export async function sendWelcomeEmail(user){
         Subject: "Congrats for subscribing to My Daily Reads",
         TextPart: `Hello ${user.name.match(/^([\w]+)/gi)[0]}, you've successfully subscribed to My Daily Reads. \n We'll be sending you daily dev content tailored to ${keywordsText}.`,
         HTMLPart: WelcomeEmailHtml(firstName, keywordsText, user.email)
+      }
+    ]
+  };
+
+  return fetch(`https://api.mailjet.com/v3.1/send`, {
+    method: 'POST',
+    headers: HEADERS,
+    body: JSON.stringify(data),
+  })
+  .then(x => {
+    return true;
+  })
+  .catch( e => {
+    return false;
+  })
+}
+  
+/**
+ * @description This function sends a farewell email
+ * @param { Object } user => user object
+**/
+export async function sendFarewellEmail(user){
+  let firstName = user.name.match(/^([\w]+)/gi)[0];
+  const data = {
+    Messages:[
+      {
+        From: FROM,
+        To: [
+          {
+            Email: user.email,
+            Name: user.name
+          }
+        ],
+        Subject: "Tchao! " + firstName,
+        TextPart: `Hello ${firstName}, you've successfully unsubscribed from My Daily Reads. \n Sad to see you go.`,
+        HTMLPart: FarewellEmailHtml(firstName)
       }
     ]
   };
