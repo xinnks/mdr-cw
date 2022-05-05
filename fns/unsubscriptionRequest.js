@@ -6,7 +6,7 @@ const { sendOtpEmail } = require("./../content/helpers/emails");
  * @description This function verifies the user account from a unsubscription request
  * @param { String } email => The user's data
 **/
-export function UnsubscriptionRequest(email){
+export async function UnsubscriptionRequest(email){
   let message;
   // check if user existss
   const {state: foundDoc, body: user} = await findDocument({email: email}, USER_COLLECTION, {_id: 1, email: 1, name: 1});
