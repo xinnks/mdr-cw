@@ -3,8 +3,9 @@ const { rawHtmlResponse, rawJsonResponse, readRequestBody } = require('./utils')
 const { Subscribe } = require('./fns/subscribe');
 const { CollectContentForDay } = require('./fns/collectContentForDay');
 const { SendContentEmails } = require('./fns/sendContentEmails');
+const { RedirectToArticle } = require('./fns/redirectToArticle');
 const { formatDate, dateDifference } = require('./content/helpers/utils');
-const { indexHtml, messageHtml, successHtml } = require('./html');
+const { indexHtml, messageHtml, successHtml, NotFoundHtml } = require('./html');
 // Create a new router
 const router = Router();
 
@@ -76,6 +77,27 @@ router.post("/send-emails", async request => {
   let {status, message} = await SendContentEmails();
   
   return rawJsonResponse({status, message});
+})
+
+/**
+ * Redirection route, redirects mdr link to actual post link 
+ * @returns {Response}
+*/
+router.get("/rdr", async ({ query }) => { 
+  let {id: contentStashId} = query;
+
+  if (!contentStashId) {
+    return rawHtmlResponse(NotFoundHtml);
+  }
+
+  const {status, body: url} = await RedirectToArticle(contentStashId);
+
+  if(status === "failure"){
+    // Return the HTML with the string to the client
+    return rawHtmlResponse(NotFoundHtml);
+  }
+  // Redirect to url
+  return Response.redirect(url, 301)
 })
 
 /**
