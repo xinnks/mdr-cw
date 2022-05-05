@@ -22,7 +22,7 @@ export function rawJsonResponse(data) {
       'content-type': 'application/json',
     },
   };
-  return new Response(data, init);
+  return new Response(JSON.stringify(data, null, 2), init);
 }
 
 /**
