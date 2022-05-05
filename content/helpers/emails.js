@@ -1,6 +1,6 @@
 const { formatDate } = require('./utils');
 
-const { otpEmailHtml, ContentEmailHtml, WelcomeEmailHtml, FarewellEmailHtml } = require('./../../html');
+const { otpEmailHtml, ContentEmailHtml, WelcomeEmailHtml, FarewellEmailHtml, KeywordsUpdateEmailHtml } = require('./../../html');
 
 /**
  * @type {Message}
@@ -172,4 +172,42 @@ export async function sendFarewellEmail(user){
     console.log(e);
     return false;
   }
+}
+
+/**
+ * @description This function sends a keywords update notification email to user
+ * @param { Object } user => User information object
+**/
+export async function updateNotificationEmail(user){
+  let firstName = user.name.match(/^([\w]+)/gi)[0];
+  let keywords = user.keywords.includes(",") ? user.keywords.replace(" ", "").split(",") : [user.keywords];
+  let keywordsText = keywords.length > 1 ? (keywords.length > 1 ? `${keywords[0]} and ${keywords[1]}` : keywords[0]) : "the new keywords";
+  const data = {
+    Messages:[
+      {
+        From: FROM,
+        To: [
+          {
+            Email: user.email,
+            Name: user.name
+          }
+        ],
+        Subject: "My Daily Reads content keywords updated.",
+        TextPart: `Hello ${firstName}, you've successfully updated the keywords to your My Daily Reads content. \n We'll now be sending you daily dev content tailored to ${keywordsText}.`,
+        HTMLPart: KeywordsUpdateEmailHtml(firstName, keywordsText, user.email)
+      }
+    ]
+  };
+
+  return fetch(`https://api.mailjet.com/v3.1/send`, {
+    method: 'POST',
+    headers: HEADERS,
+    body: JSON.stringify(data),
+  })
+  .then(() => {
+    return true;
+  })
+  .catch(() => {
+    return false;
+  })
 }
