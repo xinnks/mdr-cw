@@ -67,7 +67,6 @@ router.get("/unsubscribe", async ({ query }) => {
     }
     return rawHtmlResponse(messageHtml(title, message));
   }
-  // Redirect to url
   return rawHtmlResponse(UnsubscribeRequestHtml);
 })
 
