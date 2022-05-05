@@ -5,6 +5,7 @@ const { CollectContentForDay } = require('./fns/collectContentForDay');
 const { SendContentEmails } = require('./fns/sendContentEmails');
 const { RedirectToArticle } = require('./fns/redirectToArticle');
 const { UnsubscriptionRequest } = require('./fns/unsubscriptionRequest');
+const { Unsubscribe } = require('./fns/unsubscribe');
 const { formatDate, dateDifference } = require('./content/helpers/utils');
 const { indexHtml, messageHtml, successHtml, NotFoundHtml, UnsubscribeRequestHtml } = require('./html');
 // Create a new router
@@ -66,6 +67,35 @@ router.get("/unsubscribe", async ({ query }) => {
   }
   // Redirect to url
   return rawHtmlResponse(UnsubscribeRequestHtml);
+})
+
+/** This route unsubscribes a user from my-daily-reads service
+ * @param {Request} {params}
+ * @returns {Response}
+*/
+router.post("/unsubscribe", async request => {
+  let reqBody = await readRequestBody(request), message, title;
+  let { otp } = reqBody;
+  
+  if(!otp){
+    message = `otp is required.`;
+    return rawHtmlResponse(messageHtml("Missing fields", message));
+  }
+
+  const {status, body} = await Unsubscribe(parseInt(otp));
+
+  if(status === "failure"){
+    if(body.includes("Could not")){
+      message = "Server Error";
+      title = "Sorry, we've encountered an error on our side. Please refresh page to retry.";
+    } else {
+      title = body;
+      message = body.toLowerCase.includes("otp") ? "Please make a new unsubscription request." : body;
+    }
+    return rawHtmlResponse(messageHtml(title, message));
+  }
+  
+  return rawHtmlResponse(messageHtml("Farewell", body));
 })
 
 /** This route subscribes a user to the my-daily-reads service
