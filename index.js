@@ -137,7 +137,7 @@ router.post("/update-keywords", async request => {
   let reqBody = await readRequestBody(request), message;
   let { otp, keywords } = reqBody;
   
-  if(!email || !keywords){
+  if(!otp || !keywords){
     message = `${!otp?'otp, ':''}${!keywords?'keywords, ':''} are required.`;
     return rawHtmlResponse(messageHtml("Missing fields", message));
   }
