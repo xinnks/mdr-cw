@@ -31,7 +31,7 @@ export async function UpdateKeywords(otp, newKeywords){
     return {status: "failure", body: message};
   }
   
-  const  {state: updateState } = await updateDocument(userAccount.data.refId, {keywords: newKeywords}, USER_COLLECTION)
+  const  {state: updateState} = await updateDocument(userAccount.refId, {keywords: newKeywords}, USER_COLLECTION)
   if(updateState === "error"){
     message = "Could not update keywords!";
     // TODO: Send error log email
