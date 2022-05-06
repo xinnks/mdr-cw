@@ -19,7 +19,7 @@ export async function KeywordsUpdateRequest(email){
   const otp = generateOTP();
   
   // Save otp to db
-  const {state: otpInsertState} = await insertDocument({email: userAccount.data.email, otp: otp, created: new Date()}, OTP_COLLECTION);
+  const {state: otpInsertState} = await insertDocument({email: userAccount.data.email, otp: otp, created: Date.now()}, OTP_COLLECTION);
   if(otpInsertState === "error"){
     message = "Could not create OTP row!";
     // TODO: Send error log email
