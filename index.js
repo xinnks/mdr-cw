@@ -91,7 +91,7 @@ router.post("/unsubscribe", async request => {
       title = "Sorry, we've encountered an error on our side. Please refresh page to retry.";
     } else {
       title = body;
-      message = body.toLowerCase.includes("otp") ? "Please make a new unsubscription request." : body;
+      message = body.toLowerCase().includes("otp") ? "Please make a new unsubscription request." : body;
     }
     return rawHtmlResponse(messageHtml(title, message));
   }
@@ -154,7 +154,7 @@ router.post("/update-keywords", async request => {
       title = "Sorry, we've encountered an error on our side. Please refresh page to retry.";
     } else {
       title = body;
-      message = body.toLowerCase.includes("otp") ? "Please make a new keywords update request." : body;
+      message = body.toLowerCase().includes("otp") ? "Please make a new keywords update request." : body;
     }
     return rawHtmlResponse(messageHtml(title, message));
   }
