@@ -63,7 +63,7 @@ export function KeywordsUpdateEmailHtml (firstName, keywordsText, email){
       <!-- Set text color and font family ("sans-serif" or "Georgia, serif"). Duplicate all text styles in links, including line-height -->
       <tr>
         <td align="center" valign="top" style="border-collapse: collapse;border-spacing: 0;margin: 0;padding: 0;padding-left: 6.25%;padding-right: 6.25%;width: 87.5%;font-size: 20px;font-weight: 600;line-height: 160%;padding-top: 30px;padding-bottom: 30px;color: #000000;font-family: sans-serif;-webkit-font-smoothing: antialiased;text-size-adjust: 100%;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;mso-table-lspace: 0pt;mso-table-rspace: 0pt;" class="paragraph">
-        Hello ${firstName}, you've successfully subscribed to My Daily Reads.
+        Hello ${firstName}, you've successfully updated your My Daily Reads content keywords.
         </td>
       </tr>
 
