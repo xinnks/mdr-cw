@@ -39,7 +39,7 @@ export async function UpdateKeywords(otp, newKeywords){
   }
   
   // send update notification email
-  const notifyUser = await updateNotificationEmail(userAccount.data);
+  const notifyUser = await updateNotificationEmail(Object.assign(userAccount.data, {keywords: newKeywords}));
   if(!notifyUser){
     message = "Could not notify user of changes!";
     // TODO: Send error log email 
