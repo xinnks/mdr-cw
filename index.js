@@ -150,8 +150,8 @@ router.post("/update-keywords", async request => {
 
   if(status === "failure"){
     if(body.includes("Could not")){
-      message = "Server Error";
-      title = "Sorry, we've encountered an error on our side. Please refresh page to retry.";
+      title = "Server Error";
+      message = "Sorry, we've encountered an error on our side. Please refresh page to retry.";
     } else {
       title = body;
       message = body.toLowerCase().includes("otp") ? "Please make a new keywords update request." : body;
@@ -159,7 +159,7 @@ router.post("/update-keywords", async request => {
     return rawHtmlResponse(messageHtml(title, message));
   }
   
-  return rawHtmlResponse(messageHtml("Successfully changed keywords!", message));
+  return rawHtmlResponse(messageHtml("Successfully changed keywords!", ""));
 })
 
 /** This route subscribes a user to the my-daily-reads service
