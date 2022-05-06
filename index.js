@@ -104,7 +104,7 @@ router.post("/unsubscribe", async request => {
  * @returns {Response}
 */
 router.get("/update", async ({ query }) => {
-  return rawHtmlResponse(UpdateKeywordsRequestHtml);
+  return rawHtmlResponse(UpdateKeywordsRequestHtml());
 })
 
 /** This route logs user info(keywords) update request
