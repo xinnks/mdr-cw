@@ -9,7 +9,7 @@ const { sendOtpEmail } = require("./../content/helpers/emails");
 export async function KeywordsUpdateRequest(email){
   let message;
   // get user info
-  const {state: userState, body: userAccount} = await findDocument(email, ALL_USERS_INDEX);
+  const {state: userState, body: userAccount} = await findDocument(email, ACCOUNT_FROM_EMAIL_INDEX);
 
   if(userState === "error"){
     message = "No user with email!";

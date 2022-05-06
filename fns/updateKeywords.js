@@ -25,7 +25,7 @@ export async function UpdateKeywords(otp, newKeywords){
     // TODO: Send error log email
   }
   
-  const {status: userFindState, body: userAccount} = await findDocument(otpData.data.email, USER_COLLECTION);
+  const {status: userFindState, body: userAccount} = await findDocument(otpData.data.email, ACCOUNT_FROM_EMAIL_INDEX);
   if(userFindState === "error"){
     message = "No account with this email!";
     return {status: "failure", body: message};
