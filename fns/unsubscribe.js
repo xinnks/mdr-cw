@@ -16,7 +16,7 @@ export async function Unsubscribe (otp){
   }
   
   // check otp expiration status
-  if((Date.parse(new Date()) - Date.parse(new Date(otpData.data.created))) > 900000){
+  if((Date.now() - Date.parse(new Date(otpData.data.created))) > 900000){
     message = "OTP expired!";
     return {status: "failure", body: message};
   }

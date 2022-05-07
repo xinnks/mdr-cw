@@ -13,8 +13,8 @@ export async function UpdateKeywords(otp, newKeywords){
     message = "OTP does not exist!";
     return {status: "failure", body: message};
   }
-
-  if((Date.parse(Date.now()) - Date.parse(new Date(otpData.data.created))) > 900000){
+  
+  if((Date.now() - Date.parse(new Date(otpData.data.created))) > 900000){
     message = "OTP expired!";
     return {status: "failure", body: message};
   }
