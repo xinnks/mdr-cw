@@ -9,7 +9,7 @@ const { sendOtpEmail } = require("./../content/helpers/emails");
 export async function UnsubscriptionRequest(email){
   let message;
   // check if user existss
-  const {state: foundDoc, body: user} = await findDocument({email: email}, USER_COLLECTION, {_id: 1, email: 1, name: 1});
+  const {state: foundDoc, body: user} = await findDocument(email, ACCOUNT_FROM_EMAIL_INDEX);
     if(foundDoc === "error"){
       message = "No user with this email!";
       return {status: "failure", body: message};
@@ -17,7 +17,7 @@ export async function UnsubscriptionRequest(email){
     
     const otp = generateOTP();
     
-    const {state: submitionStatus} = await insertDocument({email: userAccount.email, otp: otp, created: new Date()}, OTP_COLLECTION);
+    const {state: submitionStatus} = await insertDocument({email: user.data.email, otp: otp, created: Date.now()}, OTP_COLLECTION);
     if(!submitionStatus){
       message = "Could not create OTP row!";
       // TODO: Send error log email
