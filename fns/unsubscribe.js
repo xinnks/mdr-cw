@@ -1,5 +1,5 @@
 const { sendFarewellEmail } = require("./../content/helpers/emails");
-const { findDocument, deleteDocument, deleteDocuments, fetchAllCollectionData } = require("./../db");
+const { findDocument, findDocuments, deleteDocument, deleteDocuments } = require("./../db");
 
 /**
  * @description This function unsubscribes a user from the service
@@ -35,16 +35,8 @@ export async function Unsubscribe (otp){
     return {status: "failure", body: message};
   }
   
-  // delete user from db
-  const {status: userDeletionStatus} = await deleteDocument(userAccount.refId, USER_COLLECTION);
-  if(userDeletionStatus === "error"){
-    message = "Could not delete user!";
-    // TODO: Send error log email 
-    return {status: "failure", body: message};
-  }
-  
   // fetch user's reads
-  const {state: userReadsState, body: userReads} = fetchAllCollectionData(READS_COLLECTION);
+  const {state: userReadsState, body: userReads} = await findDocuments(userAccount.data.email, USER_READS_BY_EMAIL_INDEX);
   if(userReadsState === "success" && userReads.length){
     const {state: userReadsDeletionState} = await deleteDocuments(userReads.map(x => x.refId), READS_COLLECTION);
     if(userReadsDeletionState === "error"){
@@ -52,6 +44,14 @@ export async function Unsubscribe (otp){
       // TODO: Send error log email 
       return {status: "failure", body: message};
     }
+  }
+  
+  // delete user from db
+  const {status: userDeletionStatus} = await deleteDocument(userAccount.refId, USER_COLLECTION);
+  if(userDeletionStatus === "error"){
+    message = "Could not delete user!";
+    // TODO: Send error log email 
+    return {status: "failure", body: message};
   }
   
   // send farewell email
