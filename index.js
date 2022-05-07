@@ -4,8 +4,12 @@ const { Subscribe } = require('./fns/subscribe');
 const { CollectContentForDay } = require('./fns/collectContentForDay');
 const { SendContentEmails } = require('./fns/sendContentEmails');
 const { RedirectToArticle } = require('./fns/redirectToArticle');
+const { UnsubscriptionRequest } = require('./fns/unsubscriptionRequest');
+const { Unsubscribe } = require('./fns/unsubscribe');
+const { KeywordsUpdateRequest } = require('./fns/keywordsUpdateRequest');
+const { UpdateKeywords } = require('./fns/updateKeywords');
 const { formatDate, dateDifference } = require('./content/helpers/utils');
-const { indexHtml, messageHtml, successHtml, NotFoundHtml } = require('./html');
+const { indexHtml, messageHtml, successHtml, NotFoundHtml, UnsubscribeRequestHtml, UpdateKeywordsRequestHtml, KeywordsUpdateHtml } = require('./html');
 // Create a new router
 const router = Router();
 
@@ -38,6 +42,124 @@ router.post("/subscribe", async request => {
   let {status, message} = await Subscribe({name, email, keywords: screenedKeywordsData});
   console.error("{status, message}: -- ", {status, message});
   return status === "success" ? rawHtmlResponse(successHtml) : rawHtmlResponse(messageHtml("Failed to subscribe", message));
+})
+
+/**
+ * Route that receives an unsubscription request
+ * @returns {Response}
+*/
+router.get("/unsubscribe", async ({ query }) => {
+  let message, title, { email } = query;
+
+  if (!email) {
+    return rawHtmlResponse(NotFoundHtml);
+  }
+
+  const {status, body} = await UnsubscriptionRequest(email);
+
+  if(status === "failure"){
+    if(body === "No user with this email!"){
+      message = body;
+      title = "Unknown Account";
+    } else {
+      message = "Server Error";
+      title = "Sorry, we've encountered an error on our side. Please refresh page to retry.";
+    }
+    return rawHtmlResponse(messageHtml(title, message));
+  }
+  return rawHtmlResponse(UnsubscribeRequestHtml);
+})
+
+/** This route unsubscribes a user from my-daily-reads service
+ * @param {Request} {params}
+ * @returns {Response}
+*/
+router.post("/unsubscribe", async request => {
+  let reqBody = await readRequestBody(request), message, title;
+  let { otp } = reqBody;
+  
+  if(!otp){
+    message = `otp is required.`;
+    return rawHtmlResponse(messageHtml("Missing fields", message));
+  }
+
+  const {status, body} = await Unsubscribe(parseInt(otp));
+
+  if(status === "failure"){
+    if(body.includes("Could not")){
+      message = "Server Error";
+      title = "Sorry, we've encountered an error on our side. Please refresh page to retry.";
+    } else {
+      title = body;
+      message = body.toLowerCase().includes("otp") ? "Please make a new unsubscription request." : body;
+    }
+    return rawHtmlResponse(messageHtml(title, message));
+  }
+  
+  return rawHtmlResponse(messageHtml("Farewell", body));
+})
+
+/**
+ * Route that receives an update page request
+ * @returns {Response}
+*/
+router.get("/update", async ({ query }) => {
+  return rawHtmlResponse(UpdateKeywordsRequestHtml());
+})
+
+/** This route logs user info(keywords) update request
+ * @param {Request} {params}
+ * @returns {Response}
+*/
+router.post("/update", async request => {
+  let reqBody = await readRequestBody(request), message;
+  let { email } = reqBody;
+  
+  if(!email){
+    message = `email is required.`;
+    return rawHtmlResponse(messageHtml("Missing fields", message));
+  }
+
+  const {status, body} = await KeywordsUpdateRequest(email);
+
+  if(status === "failure"){
+    return rawHtmlResponse(UpdateKeywordsRequestHtml(body));
+  }
+  
+  return rawHtmlResponse(KeywordsUpdateHtml);
+})
+
+/** This route verifies user and updates their content keywords
+ * @param {Request} {request}
+ * @returns {Response}
+*/
+router.post("/update-keywords", async request => {
+  let reqBody = await readRequestBody(request), message;
+  let { otp, keywords } = reqBody;
+  
+  if(!otp || !keywords){
+    message = `${!otp?'otp, ':''}${!keywords?'keywords, ':''} are required.`;
+    return rawHtmlResponse(messageHtml("Missing fields", message));
+  }
+
+  // filter keywords
+  let filteredKeywords = keywords.match(/^([.]*[\w]+[ ]*[,]*[ ]*[.]*[\w]+)/gi);
+  let escapedKeywordsData = filteredKeywords.length ? filteredKeywords.join(",") : filteredKeywords.join("");
+
+  const {status, body} = await UpdateKeywords(parseInt(otp), escapedKeywordsData);
+
+  if(status === "failure"){
+    if(body.includes("Could not")){
+      title = "Server Error";
+      message = "Sorry, we've encountered an error on our side. Please refresh page to retry.";
+    } else {
+      title = body;
+      message = body.toLowerCase().includes("otp") ? "Please make a new keywords update request." : body;
+    }
+    return rawHtmlResponse(messageHtml(title, message));
+  }
+  
+  return rawHtmlResponse(messageHtml("Successfully changed keywords!", ""));
 })
 
 /** This route subscribes a user to the my-daily-reads service

@@ -4,3 +4,4 @@ worker/
 package-lock.json
 pnpm-lock.yaml
 dist
+.env
